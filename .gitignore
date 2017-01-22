@@ -1,0 +1,9 @@
+node_modules
+bower_components
+.tmp
+.zip
+.idea
+*.sublime-project
+*.sublime-workspace
+npm-debug.log
+build/
