@@ -1,21 +1,13 @@
-var todo = require('./models/todo');
+var auth = require('./models/auth');
 
 module.exports = {
   configure: function(app) {
-    app.get('/todo/', function(req, res) {
-      todo.get(res);
+    app.get('/', function(req, res) {
+        res.sendFile('/index.html', {root: __dirname});
     });
 
-    app.post('/todo/', function(req, res) {
-      todo.create(req.body, res);
-    });
-
-    app.put('/todo/', function(req, res) {
-      todo.update(req.body, res);
-    });
-
-    app.delete('/todo/:id/', function(req, res) {
-      todo.delete(req.params.id, res);
+    app.post('/users', function(req, res, next) {
+      auth.insert(req, res, next);
     });
   }
 };
