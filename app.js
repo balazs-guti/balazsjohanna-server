@@ -22,6 +22,6 @@ app.use(bodyparser.json());
 routes.configure(app);
 
 // Begin listening
-var port = 3000;
+var port = 8000;
 app.listen(port);
 console.log('Server listening on port ' + port);

@@ -6,8 +6,16 @@ module.exports = {
         res.sendFile('/index.html', {root: __dirname});
     });
 
-    app.post('/users', function(req, res, next) {
-      auth.insert(req, res, next);
+    // app.post('/users', function(req, res, next) {
+    //   auth.insert(req, res, next);
+    // });
+
+    app.post('/user/:code', function(req, res) {
+      auth.login(req, res);
+    });
+
+    app.get('/user/:code', function(req, res) {
+      auth.getLoginDetails(req, res);
     });
   }
 };
