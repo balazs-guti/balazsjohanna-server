@@ -9,6 +9,7 @@
     "body-parser": "^1.14.1",
     "cors": "^2.8.1",
     "express": "^4.13.3",
+    "lodash-node": "^3.10.2",
     "mysql": "~2.10.2"
   }
 }

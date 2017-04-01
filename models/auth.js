@@ -16,21 +16,29 @@ function auth() {
     var details = {};
     console.log(req.params.code);
 
-    function guestsQuery(callback) {
-      connection.query('SELECT text FROM guests WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+    function isAdminQuery(callback) {
+      connection.query('SELECT is_admin FROM users WHERE code = "' + req.params.code + '"',
         function(err, result) {
           if (err) throw err;
-          console.log(result);
+          details.userRights = result[0];
+          callback(null);
+        }
+      );
+    }
+
+    function guestsQuery(callback) {
+      connection.query('SELECT id, name, age, lactose, gluten, other_allergy FROM guests WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+        function(err, result) {
+          if (err) throw err;
           details.guests = result;
           callback(null);
         }
       );
     }
 
-    function wishQuery(callback) {
-      connection.query('SELECT text FROM wishes WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+    function wishesQuery(callback) {
+      connection.query('SELECT text, signature, accepted FROM wishes WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
         function(err, result) {
-          console.log(result);
           if (err) throw err;
           details.wishes = result;
           callback(null);
@@ -38,12 +46,35 @@ function auth() {
       );
     }
 
+    function requestsQuery(callback) {
+      connection.query('SELECT text, requested_invites, accepted FROM requests WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+        function(err, result) {
+          if (err) throw err;
+          details.requests = result;
+          callback(null);
+        }
+      );
+    }
+
+    function gameQuery(callback) {
+      connection.query('SELECT text FROM game WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+        function(err, result) {
+          if (err) throw err;
+          details.questions = result;
+          callback(null);
+        }
+      );
+    }
+
     asyncX.parallel([
+      isAdminQuery,
       guestsQuery,
-      wishQuery
+      wishesQuery,
+      requestsQuery,
+      gameQuery
     ], function (err, result) {
-       console.log(details);
-       res.send(details);
+      console.log(details);
+      res.send(details);
     });
 
   }
