@@ -31,6 +31,14 @@ module.exports = {
       authAdmin.addUser(req, res);
     });
 
+    app.post('/deleteUser/:code', function(req, res) {
+      authAdmin.deleteUser(req, res);
+    });
+
+    app.post('/changeUserInvites/:code', function(req, res) {
+      authAdmin.changeUserInvites(req, res);
+    });
+
     app.post('/addGuest/:code', function(req, res) {
       guests.addGuest(req, res);
     });
@@ -41,6 +49,10 @@ module.exports = {
 
     app.post('/requestInvite/:code', function(req, res) {
       requests.requestInvite(req, res);
+    });
+
+    app.post('/answerRequest/:code', function(req, res) {
+      authAdmin.answerRequest(req, res);
     });
 
     app.post('/sendQuestion/:code', function(req, res) {

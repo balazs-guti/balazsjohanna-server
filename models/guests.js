@@ -9,17 +9,21 @@ function guests() {
     var lactose = newGuest.lactose ? 1 : 0;
     var gluten = newGuest.gluten ? 1 : 0;
     
-    connection.query('INSERT INTO guests(users_id, name, age, lactose, gluten, other_allergy)'
-        + 'SELECT users.id, "' + newGuest.name + '", "' + newGuest.age + '", "' + lactose + '", "' + gluten + '", "' + newGuest.other_allergy + '"'
-        + 'FROM users WHERE code = "' + req.params.code + '";' , function (err) {
-        if (err) throw err;
-    });
+    if (newGuest.name !== '' && newGuest.age !== '') {
+        connection.query('INSERT INTO guests(users_id, name, age, lactose, gluten, other_allergy)'
+            + 'SELECT users.id, "' + newGuest.name + '", "' + newGuest.age + '", "' + lactose + '", "' + gluten + '", "' + newGuest.other_allergy + '"'
+            + 'FROM users WHERE code = "' + req.params.code + '";' , function (err) {
+            if (err) throw err;
+        });
 
-    connection.query('UPDATE users '
-        + 'SET invites = invites - 1 '
-        + 'WHERE code = "' + req.params.code + '";', function (err) {
-        if (err) throw err;
-    });
+        connection.query('UPDATE users '
+            + 'SET invites = invites - 1 '
+            + 'WHERE code = "' + req.params.code + '";', function (err) {
+            if (err) throw err;
+        });
+        
+        res.send(req.body);
+    }
 
     // connection.query('INSERT INTO guests(users_id, name, age, lactose, gluten, other_allergy)'
     //     + 'SELECT users.id, "testname", "testage", "0", "1", "testotherallergy"'
@@ -27,7 +31,6 @@ function guests() {
     //     if (err) throw err;
     // });
 
-    res.send(req.body);
   }
 
   this.deleteGuest = function(req, res) {

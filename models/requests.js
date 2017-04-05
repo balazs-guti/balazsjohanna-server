@@ -4,7 +4,7 @@ function requests() {
   this.requestInvite = function(req, res) {
      
     connection.query('INSERT INTO requests(users_id, text, requested_invites)'
-        + 'SELECT users.id, "' + req.body.text + '", "' + req.body.amount + '" '
+        + 'SELECT users.id, "' + req.body.text + '", "' + req.body.requested_invites + '" '
         + 'FROM users WHERE code = "' + req.params.code + '";' , function (err) {
         if (err) throw err;
     });
