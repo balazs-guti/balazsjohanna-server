@@ -17,6 +17,16 @@ function requests() {
 
     res.send(req.body);
   }
+
+  this.deleteRequest = function(req, res) {
+     
+    connection.query('DELETE FROM requests '
+        + 'WHERE id = "'+ req.body.requestId +'";', function (err) {
+        if (err) throw err;
+    });
+
+    res.send(req.body);
+  }
 }
 
 module.exports = new requests();

@@ -21,6 +21,15 @@ function wishes() {
     res.send(req.body);
   }
 
+  this.deleteWish = function(req, res) {
+    connection.query('DELETE FROM wishes '
+        + 'WHERE id = "'+ req.body.wishId +'";', function (err) {
+        if (err) throw err;
+    });
+    
+    res.send(req.body);
+  }
+
   this.acceptWish = function(req, res) {
   	var wishToSet = req.body;
     if (req.params.code === '3SKUV0') {

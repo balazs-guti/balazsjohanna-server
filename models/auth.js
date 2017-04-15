@@ -37,7 +37,7 @@ function auth() {
     }
 
     function wishesQuery(callback) {
-      connection.query('SELECT text, signature, accepted FROM wishes WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+      connection.query('SELECT id, text, signature, accepted FROM wishes WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
         function(err, result) {
           if (err) throw err;
           details.wishes = result;
@@ -47,7 +47,7 @@ function auth() {
     }
 
     function requestsQuery(callback) {
-      connection.query('SELECT text, requested_invites, accepted FROM requests WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+      connection.query('SELECT id, text, requested_invites, accepted FROM requests WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
         function(err, result) {
           if (err) throw err;
           details.requests = result;
@@ -57,7 +57,7 @@ function auth() {
     }
 
     function gameQuery(callback) {
-      connection.query('SELECT text FROM game WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
+      connection.query('SELECT id, text FROM game WHERE users_id IN (SELECT id FROM users WHERE code = "' + req.params.code + '")',
         function(err, result) {
           if (err) throw err;
           details.questions = result;
@@ -87,6 +87,17 @@ function auth() {
           res.send('User added to database with ID: ' + result.insertId);
       }
     );
+  }
+
+  this.answerComing = function(req, res) {
+    console.log(req.body);
+    connection.query('UPDATE users '
+        + 'SET coming = ' + req.body.answer + ' '
+        + 'WHERE code = "' + req.params.code + '";', function (err) {
+        if (err) throw err;
+    });
+    
+    res.send(req.body);
   }
 }
 

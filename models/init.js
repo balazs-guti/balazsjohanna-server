@@ -12,6 +12,7 @@ module.exports = function() {
               + 'id INT NOT NULL AUTO_INCREMENT,'
               + 'PRIMARY KEY(id),'
               + 'is_admin BOOLEAN DEFAULT NULL,'
+              + 'coming BOOLEAN DEFAULT NULL,'
               + 'code VARCHAR(6),'
               + 'name VARCHAR(30),'
               + 'invites TINYINT'
@@ -71,7 +72,7 @@ module.exports = function() {
                   if (err) throw err;
           });
           // connection.query('INSERT INTO users (is_admin, code, name, invites) '
-          //     + 'VALUES (false,"ABC123","Stefan",5); ', function (err) {
+          //     + 'VALUES (true,"3SKUV0","B&J",0); ', function (err) {
           //     if (err) throw err;
           // });
       });

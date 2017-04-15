@@ -11,6 +11,16 @@ function game() {
 
     res.send(req.body);
   }
+
+  this.deleteQuestion = function(req, res) {
+     
+    connection.query('DELETE FROM game '
+        + 'WHERE id = "'+ req.body.questionId +'";', function (err) {
+        if (err) throw err;
+    });
+
+    res.send(req.body);
+  }
 }
 
 module.exports = new game();
