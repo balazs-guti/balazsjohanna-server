@@ -23,7 +23,7 @@ function authAdmin() {
           }
         }
 
-        connection.query('SELECT SUM(invites) AS invites FROM users',
+        connection.query('SELECT SUM(invites) AS invites FROM users WHERE id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.invitesSum = result[0].invites;
@@ -39,7 +39,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS guestCount FROM guests',
+        connection.query('SELECT COUNT(name) AS guestCount FROM guests WHERE users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.guestCount = result[0].guestCount;
@@ -47,7 +47,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS babyCount FROM guests WHERE guests.age = "baby"',
+        connection.query('SELECT COUNT(name) AS babyCount FROM guests WHERE guests.age = "baby" AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.babyCount = result[0].babyCount;
@@ -55,7 +55,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS childCount FROM guests WHERE guests.age = "child"',
+        connection.query('SELECT COUNT(name) AS childCount FROM guests WHERE guests.age = "child" AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.childCount = result[0].childCount;
@@ -63,7 +63,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS teenCount FROM guests WHERE guests.age = "teen"',
+        connection.query('SELECT COUNT(name) AS teenCount FROM guests WHERE guests.age = "teen" AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.teenCount = result[0].teenCount;
@@ -71,7 +71,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS adultCount FROM guests WHERE guests.age = "adult"',
+        connection.query('SELECT COUNT(name) AS adultCount FROM guests WHERE guests.age = "adult" AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.adultCount = result[0].adultCount;
@@ -79,7 +79,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS lactoseCount FROM guests WHERE guests.lactose = true',
+        connection.query('SELECT COUNT(name) AS lactoseCount FROM guests WHERE guests.lactose = true AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.lactoseCount = result[0].lactoseCount;
@@ -87,7 +87,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS glutenCount FROM guests WHERE guests.gluten = true',
+        connection.query('SELECT COUNT(name) AS glutenCount FROM guests WHERE guests.gluten = true AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.glutenCount = result[0].glutenCount;
@@ -95,7 +95,7 @@ function authAdmin() {
           }
         );
 
-        connection.query('SELECT COUNT(name) AS allergyCount FROM guests WHERE guests.other_allergy <> ""',
+        connection.query('SELECT COUNT(name) AS allergyCount FROM guests WHERE guests.other_allergy <> "" AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.general.allergyCount = result[0].allergyCount;
@@ -114,8 +114,18 @@ function authAdmin() {
         );
       }
 
-      function guestsQuery(callback) {
+      function allGuestsQuery(callback) {
         connection.query('SELECT * FROM guests',
+          function(err, result) {
+            if (err) throw err;
+            details.allGuests = result;
+            callback(null);
+          }
+        );
+      }
+
+      function guestsQuery(callback) {
+        connection.query('SELECT * FROM guests WHERE users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.guests = result;
@@ -125,7 +135,7 @@ function authAdmin() {
       }
 
       function requestsQuery(callback) {
-        connection.query('SELECT name, requests.id, users_id, accepted, text, requested_invites FROM requests, users WHERE users.id = users_id',
+        connection.query('SELECT name, requests.id, users_id, accepted, text, requested_invites FROM requests, users WHERE users.id = users_id AND users_id IN (SELECT id FROM users WHERE coming <> false OR coming IS NULL)',
           function(err, result) {
             if (err) throw err;
             details.requests = result;
@@ -164,6 +174,7 @@ function authAdmin() {
         generalQuery,
         usersQuery,
         guestsQuery,
+        allGuestsQuery,
         wishesQuery,
         requestsQuery,
         gameQuery
@@ -172,7 +183,7 @@ function authAdmin() {
 
         var mergedUsers = details.users.map(function(userItem){
           var guests = [];
-          var guestsList = details.guests.map(function(guestItem) {
+          var guestsList = details.allGuests.map(function(guestItem) {
             if (userItem.id === guestItem.users_id) {
               guests.push(guestItem.name)
             }
@@ -216,12 +227,20 @@ function authAdmin() {
   this.changeUserInvites = function(req, res) {
     console.log(req.body);
 
-    connection.query('UPDATE users '
-        + 'SET invites = invites + ' + req.body.amount + ' '
-        + 'WHERE code = "' + req.body.code + '";',
+    connection.query('SELECT invites '
+        + 'FROM users WHERE code = "' + req.body.code + '";',
         function (err, result) {
             if (err) throw err;
-            res.send('set');
+            if (result[0].invites + Number(req.body.amount) >= 0) { // if it wouldnt go minus
+              connection.query('UPDATE users '
+                  + 'SET invites = invites + ' + req.body.amount + ' '
+                  + 'WHERE code = "' + req.body.code + '";',
+                  function (err, result) {
+                      if (err) throw err;
+                      res.send('set');
+                  }
+              );
+            }
         }
     );
   }
