@@ -10,7 +10,6 @@ function authAdmin() {
     };
 
     if (req.params.code === '3SKUV0') {
-      console.log(req.params.code);
       var count = 0;
 
 

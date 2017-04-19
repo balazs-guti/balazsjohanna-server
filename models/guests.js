@@ -2,8 +2,6 @@ var connection = require('../connection');
 
 function guests() {
   this.addGuest = function(req, res) {
-    console.log(req.body);
-    console.log(req.params);
 
     var newGuest = req.body;
     var lactose = newGuest.lactose ? 1 : 0;

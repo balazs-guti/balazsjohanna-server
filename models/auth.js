@@ -73,14 +73,12 @@ function auth() {
       requestsQuery,
       gameQuery
     ], function (err, result) {
-      console.log(details);
       res.send(details);
     });
 
   }
 
   this.insert = function(req, res) {
-    console.log(req.body);
     connection.query('INSERT INTO users SET ?', req.body,
       function (err, result) {
           if (err) throw err;
@@ -90,7 +88,6 @@ function auth() {
   }
 
   this.answerComing = function(req, res) {
-    console.log(req.body);
     connection.query('UPDATE users '
         + 'SET coming = ' + req.body.answer + ' '
         + 'WHERE code = "' + req.params.code + '";', function (err) {
