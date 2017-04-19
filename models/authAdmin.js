@@ -12,7 +12,6 @@ function authAdmin() {
     if (req.params.code === '3SKUV0') {
       var count = 0;
 
-
       function generalQuery(callback) {
 
         function callbackIfLast() {
@@ -157,12 +156,10 @@ function authAdmin() {
         connection.query('SELECT * FROM wishes',
           function(err, result) {
             if (err) throw err;
-            console.log(result);
             var newResult = result.map(function(wish) {
               wish.accepted = wish.accepted === 1 ? true : false;
               return wish;
             });
-            console.log('newResult: ',newResult);
             details.wishes = newResult;
             callback(null);
           }
@@ -178,7 +175,6 @@ function authAdmin() {
         requestsQuery,
         gameQuery
       ], function (err, result) {
-        console.log(details);
 
         var mergedUsers = details.users.map(function(userItem){
           var guests = [];
@@ -198,7 +194,6 @@ function authAdmin() {
   }
 
   this.addUser = function(req, res) {
-    console.log(req.body);
     if (req.params.code === '3SKUV0' && req.body.code !== '' && req.body.name !== '') {
       connection.query('INSERT INTO users (code, name, invites) ' 
         + 'VALUES ("' + req.body.code + '","' + req.body.name + '",' + req.body.invites + ');',
@@ -211,7 +206,6 @@ function authAdmin() {
   }
 
   this.deleteUser = function(req, res) {
-    console.log(req.body);
     if (req.params.code === '3SKUV0' && req.body.code !== '3SKUV0') {
       connection.query('DELETE FROM users  ' 
         + 'WHERE code = "' + req.body.code + '";',
@@ -224,7 +218,6 @@ function authAdmin() {
   }
 
   this.changeUserInvites = function(req, res) {
-    console.log(req.body);
 
     connection.query('SELECT invites '
         + 'FROM users WHERE code = "' + req.body.code + '";',
@@ -245,7 +238,6 @@ function authAdmin() {
   }
 
   this.answerRequest = function(req, res) {
-    console.log(req.body);
 
     var answer = req.body.answer === 'accept' ? true : false;
 
